@@ -1,12 +1,14 @@
 Package: live.code.editor
-Title: What the Package Does (One Line, Title Case)
+Title: submission to Rstudio DT contest, live R code editor
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Zac",
            family = "Garland",
            role = c("aut", "cre"),
            email = "zachary.garland@outlook.com")
-Description: What the package does (one paragraph).
+Description: The package takes the rhandsontable and creates an interactive environment
+to code in R. The goal is to show how one could create a live code render for data manipulation, 
+charting, tables, etc. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: es
