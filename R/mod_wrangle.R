@@ -5,82 +5,82 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd
-#'
+#' @export
 #' @importFrom shiny NS tagList
-wrangle_ui_mod <- function(id) {
-  ns <- NS(id)
-  tagList(
-    fluidPage(
-      boot_side_layout(
-        boot_sidebar(
-          searchInput(
-            inputId = ns("data_id"),
-            label = "Data:",
-            placeholder = "mtcars, diamonds, ...",
-            btnSearch = icon("search"),
-            btnReset = icon("remove"),
-            width = "100%"
-          ),
-          rHandsontableOutput(ns("data_pre"))
+mod_wrangle_ui <- function(id) {
+  ns <- shiny::NS(id)
+
+  names <- ls("package:datasets")
+
+  shiny::tagList(
+    shiny::fluidPage(
+      shiny::fluidRow(
+        shiny::column(
+          width = 4,
+          shiny::selectInput(ns("dataset"), "Pick a dataset", choices = names),
+          rhandsontable::rHandsontableOutput(ns("data_pre"))
         ),
-        boot_main(
-          rHandsontableOutput(ns("data_pre_result"), height = "900px")
+        shiny::column(
+          width = 8,
+          rhandsontable::rHandsontableOutput(ns("data_pre_result"))
         )
       )
+
     )
   )
 }
 
 
 #' wrangle Server Function
-#'
+#' @export
 #' @noRd
-wrangle_server_mod <- function(input, output, session) {
+mod_wrangle_server <- function(input, output, session, data) {
   sessionval <- session$ns("")
 
   # default parameters ----
-  def_params <- tibble(params = c("#Example Comment", rep_len(NA_character_, 19)))
+  def_params <- tibble::tibble(params = c("#Example Comment", rep_len(NA_character_, 19)))
 
   # reactive values----
-  reac_values <- reactiveValues(
+  reac_values <- shiny::reactiveValues(
     data_pre = def_params
   )
 
   # reactive data ----
-  reac_data <- reactive({
-    get(input$data_id)
+  reac_data <- shiny::reactive({
+    base::get(input$dataset, "package:datasets") %>%
+      tibble::as_tibble()
   })
 
   # screening table output ----
-  output$data_pre <- renderRHandsontable({
+  output$data_pre <- rhandsontable::renderRHandsontable({
     def_params %>%
-      rhandsontable(stretchH = "all",width = "200px")
+      rhandsontable::rhandsontable(stretchH = "all", width = "200px")
   })
 
   # update screening code reactive values ----
-  observe({
+  shiny::observe({
     if (!is.null(input$data_pre)) {
-      reac_values$data_pre <- hot_to_r(input$data_pre)
+      reac_values$data_pre <- rhandsontable::hot_to_r(input$data_pre)
     }
   })
 
   # process data ----
-  filt_df <- reactive({
+  filt_df <- shiny::reactive({
     data_pre <- reac_values$data_pre
 
-    bbg_series <- reac_data()
+    data_series <- reac_data()
 
     params <- data_pre %>%
-      filter(
+      dplyr::filter(
         !is.na(params),
         !is.null(params),
         params != "",
-        str_sub(params,1,1) != "#"
+        stringr::str_sub(params, 1, 1) != "#"
       )
 
     if (length(params$params) > 0) {
       params <- params %>%
-        mutate(
+        dplyr::mutate(
           row_n = 1:nrow(.),
           params = ifelse(
             row_n == max(row_n, na.rm = T),
@@ -88,8 +88,8 @@ wrangle_server_mod <- function(input, output, session) {
             paste0(params, "%>%")
           )
         ) %>%
-        pull(params) %>%
-        str_c(collapse = "")
+        dplyr::pull(params) %>%
+        stringr::str_c(collapse = "")
     } else {
       params <- NULL
     }
@@ -97,23 +97,23 @@ wrangle_server_mod <- function(input, output, session) {
 
 
     if (length(params) >= 1) {
-      eval(parse(text = paste0("filt_df <- bbg_series %>%", params)))
+      eval(parse(text = paste0("filt_df <- data_series %>%", params)))
     } else {
-      filt_df <- bbg_series
+      filt_df <- data_series
     }
 
-    print(paste0("filt_df <- bbg_series %>%", params))
+    print(paste0("filt_df <- data_series %>%", params))
     print(filt_df)
 
     filt_df
   })
 
   # output filtered results ----
-  output$data_pre_result <- renderRHandsontable({
+  output$data_pre_result <- rhandsontable::renderRHandsontable({
     filt_df() %>%
-      rhandsontable(stretchH = "all") %>%
-      hot_cols(fixedColumnsLeft = 1) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+      rhandsontable::rhandsontable(stretchH = "all") %>%
+      rhandsontable::hot_cols(fixedColumnsLeft = 1) %>%
+      rhandsontable::hot_table(highlightCol = TRUE, highlightRow = TRUE)
   })
 }
 
@@ -122,4 +122,3 @@ wrangle_server_mod <- function(input, output, session) {
 
 ## To be copied in the server
 # callModule(mod_wrangle_server, "wrangle_ui_1")
-

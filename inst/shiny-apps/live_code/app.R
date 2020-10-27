@@ -11,7 +11,7 @@ ui <- tagList(
     tags$link(rel = "stylesheet", type = "text/css", href = "default.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "style_slim.css")
   ),
-  bootstrap(),
+  bootstraplib::bootstrap(),
   navbarPage(
     collapsible = TRUE,
     title = app_title(),

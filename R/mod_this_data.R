@@ -8,19 +8,19 @@
 #'
 #' @importFrom shiny NS tagList
 mod_this_data_ui <- function(id, filter = NULL){
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
   names <- ls("package:datasets")
   if (!is.null(filter)) {
     data <- lapply(names, get, "package:datasets")
-    names <- names[vapply(data, filter, logical(1))]
+    names <- names[vapply(data, stats::filter, logical(1))]
   }
 
 
 
 
-  tagList(
-    selectInput(NS(id, "dataset"), "Pick a dataset", choices = names)
+  shiny::tagList(
+    shiny::selectInput(shiny::NS(id, "dataset"), "Pick a dataset", choices = names)
   )
 }
 
@@ -36,7 +36,7 @@ mod_this_data_ui <- function(id, filter = NULL){
 mod_this_data_server <- function(input, output, session){
   ns <- session$ns
 
-  reactive(get(input$dataset, "package:datasets"))
+  shiny::reactive(get(input$dataset, "package:datasets"))
 
 
 }
