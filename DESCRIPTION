@@ -7,8 +7,8 @@ Authors@R:
            role = c("aut", "cre"),
            email = "zachary.garland@outlook.com")
 Description: The package takes the rhandsontable and creates an interactive environment
-to code in R. The goal is to show how one could create a live code render for data manipulation, 
-charting, tables, etc. 
+    to code in R. The goal is to show how one could create a live code render for data manipulation, 
+    charting, tables, etc. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: es
