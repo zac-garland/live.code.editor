@@ -1,0 +1,15 @@
+Package: live.code.editor
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Zac",
+           family = "Garland",
+           role = c("aut", "cre"),
+           email = "zachary.garland@outlook.com")
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: es
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
